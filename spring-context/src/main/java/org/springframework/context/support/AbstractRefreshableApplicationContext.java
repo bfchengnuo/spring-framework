@@ -70,7 +70,15 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	@Nullable
 	private Boolean allowCircularReferences;
 
-	/** Bean factory for this context. */
+	/**
+	 * Bean factory for this context.
+	 * 通过组合的方式
+	 * 有点像代理模式，使用 {@link super#getBean(String)} 的时候其实是通过这个组合对象去查找
+	 *
+	 * 可推测，beanFactory 是底层的容器，ApplicationContext 使用组合方式，增加了一些特性(AOP、事件、元信息、资源管理、国际化等等)
+	 *
+	 * @see #getBeanFactory() 可获取 ApplicationContext 的底层实现 BeanFactory
+	 */
 	@Nullable
 	private DefaultListableBeanFactory beanFactory;
 
@@ -119,6 +127,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * This implementation performs an actual refresh of this context's underlying
 	 * bean factory, shutting down the previous bean factory (if any) and
 	 * initializing a fresh bean factory for the next phase of the context's lifecycle.
+	 * @see AbstractApplicationContext#obtainFreshBeanFactory()
 	 */
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
@@ -127,6 +136,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			closeBeanFactory();
 		}
 		try {
+			// DefaultListableBeanFactory 的创建过程
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
 			beanFactory.setSerializationId(getId());
 			customizeBeanFactory(beanFactory);

@@ -25,11 +25,13 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import kotlin.reflect.KProperty;
 import kotlin.reflect.jvm.ReflectJvmMapping;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
@@ -48,6 +50,9 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Juergen Hoeller
  * @since 2.5
+ *
+ * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#resolveDependency(DependencyDescriptor, String, Set, TypeConverter)
+ * 注入入口
  */
 @SuppressWarnings("serial")
 public class DependencyDescriptor extends InjectionPoint implements Serializable {
@@ -67,6 +72,9 @@ public class DependencyDescriptor extends InjectionPoint implements Serializable
 
 	private final boolean required;
 
+	/**
+	 * lazy
+	 */
 	private final boolean eager;
 
 	private int nestingLevel = 1;
@@ -381,6 +389,7 @@ public class DependencyDescriptor extends InjectionPoint implements Serializable
 	/**
 	 * Determine the declared (non-generic) type of the wrapped parameter/field.
 	 * @return the declared type (never {@code null})
+	 * 确定最终的注入类型
 	 */
 	public Class<?> getDependencyType() {
 		if (this.field != null) {

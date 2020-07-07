@@ -1,10 +1,14 @@
 package com.bfchengnuo.ioc;
 
+import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
+import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.AbstractApplicationContext;
+
+import java.util.Set;
 
 /**
  * IoC 是一个概念，具体实现有多种，例如 EJB，Spring、SPI、JNDI、Servlet、GoogleGuice 等等。
@@ -17,6 +21,9 @@ import org.springframework.context.support.AbstractApplicationContext;
  * 依赖注入的方式：setter、构造器、字段、方法参数、Aware接口
  *
  * IoC 主要启动过程，声明周期：{@link AbstractApplicationContext#refresh()}
+ *
+ * @see org.springframework.beans.factory.config.DependencyDescriptor 注入描述
+ * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#resolveDependency(DependencyDescriptor, String, Set, TypeConverter) 入口
  *
  * @author 冰封承諾Andy
  * @date 2020/7/2

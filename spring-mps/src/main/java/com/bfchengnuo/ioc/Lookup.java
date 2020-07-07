@@ -4,6 +4,7 @@ import com.bfchengnuo.domain.User;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.Map;
@@ -23,9 +24,13 @@ public class Lookup {
 		User user = beanFactory.getBean("user", User.class);
 		System.out.println(user);
 
-		// 延迟查找
+		// 延迟查找，或者高版本可以使用 beanFactory.getBeanProvider()
+		// ObjectProvider 更加的安全
+		@SuppressWarnings("unchecked")
 		ObjectFactory<User> lazyUser = (ObjectFactory<User>) beanFactory.getBean("objectFactory");
 		System.out.println(lazyUser.getObject());
+		ObjectProvider<User> beanProvider = beanFactory.getBeanProvider(User.class);
+		System.out.println(beanProvider.getObject());
 
 		lookupCollectionByType(beanFactory);
 		lookupCollectionByType( beanFactory);

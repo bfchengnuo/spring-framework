@@ -39,6 +39,8 @@ import org.springframework.util.ClassUtils;
  * Includes a set of {@link Bean} methods, including all such methods
  * defined in the ancestry of the class, in a 'flattened-out' manner.
  *
+ * 与 @Configuration 的强联系，使用的就是本类来进行封装
+ *
  * @author Chris Beams
  * @author Juergen Hoeller
  * @author Phillip Webb

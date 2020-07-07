@@ -38,6 +38,9 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 03.11.2003
  * @see org.springframework.context.support.AbstractApplicationContext#getBeanFactory()
+ *
+ * 因为继承 ListableBeanFactory 所以它是集合类型；ListableBeanFactory 继承的 BeanFactory 是单一类型；
+ * 而 ConfigurableBeanFactory 是层次类型，因为继承了 HierarchicalBeanFactory
  */
 public interface ConfigurableListableBeanFactory
 		extends ListableBeanFactory, AutowireCapableBeanFactory, ConfigurableBeanFactory {

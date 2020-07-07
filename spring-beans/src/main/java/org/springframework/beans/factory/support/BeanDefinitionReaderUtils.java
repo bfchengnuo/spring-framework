@@ -120,6 +120,7 @@ public abstract class BeanDefinitionReaderUtils {
 
 		if (isInnerBean) {
 			// Inner bean: generate identity hashcode suffix.
+			// 如果是嵌套类，使用 # 进行分割
 			return generatedBeanName + GENERATED_BEAN_NAME_SEPARATOR + ObjectUtils.getIdentityHexString(definition);
 		}
 
@@ -138,6 +139,7 @@ public abstract class BeanDefinitionReaderUtils {
 	 */
 	public static String uniqueBeanName(String beanName, BeanDefinitionRegistry registry) {
 		String id = beanName;
+		// 记录有多少相同的 Bean，类型
 		int counter = -1;
 
 		// Increase counter until the id is unique.

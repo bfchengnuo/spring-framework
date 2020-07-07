@@ -31,6 +31,13 @@ import org.springframework.lang.Nullable;
  * {@link BeanFactoryPostProcessor} to introspect and modify property values
  * and other bean metadata.
  *
+ * Bean 的配置元信息接口;
+ * 主要包含：
+ * - 全限定名称，具体类
+ * - 行为配置，例如作用域、生命周期回调
+ * - Bean 属性
+ * - 其他 Bean 的引用（合作者或者依赖者）
+ *
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @since 19.03.2004

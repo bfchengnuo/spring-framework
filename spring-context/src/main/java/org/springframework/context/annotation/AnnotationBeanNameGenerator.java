@@ -85,6 +85,7 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 			}
 		}
 		// Fallback: generate a unique default bean name.
+		// 补偿方式兼容老版本
 		return buildDefaultBeanName(definition, registry);
 	}
 

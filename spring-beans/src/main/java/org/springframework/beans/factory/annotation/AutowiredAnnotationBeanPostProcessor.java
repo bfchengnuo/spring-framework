@@ -398,7 +398,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 
 	/**
 	 * 注入主要过程之一，作为后阶段，前阶段：{@link #postProcessMergedBeanDefinition(RootBeanDefinition, Class, String)}
-	 * 主要的注入过程
+	 * 主要的注入过程，XML 和注解，优先于 setter 方法注入；
 	 * @param pvs bean 的属性元信息，例如 xml 中配置的属性信息，字符串类型
 	 */
 	@Override

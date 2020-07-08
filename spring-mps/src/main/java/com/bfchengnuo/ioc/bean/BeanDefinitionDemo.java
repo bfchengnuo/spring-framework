@@ -16,6 +16,8 @@ import org.springframework.util.StringUtils;
  * @see  org.springframework.context.annotation.AnnotationBeanNameGenerator
  * PS: 别名方式
  *
+ * @see BeanDefinitionRegistry#registerBeanDefinition(String, BeanDefinition) BeanDefinition 注册中心
+ * 具体实现：{@link DefaultListableBeanFactory#registerBeanDefinition(String, BeanDefinition)}
  * @author 冰封承諾Andy
  * @date 2020/7/4
  */

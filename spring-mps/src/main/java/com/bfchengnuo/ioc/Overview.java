@@ -2,12 +2,23 @@ package com.bfchengnuo.ioc;
 
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
+import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DependencyDescriptor;
+import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultSingletonBeanRegistry;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.LifecycleProcessor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.*;
+import org.springframework.context.event.ApplicationEventMulticaster;
+import org.springframework.context.event.DefaultEventListenerFactory;
+import org.springframework.context.event.EventListenerMethodProcessor;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.AbstractRefreshableApplicationContext;
+import org.springframework.core.env.Environment;
 
 import java.util.Set;
 
@@ -23,16 +34,16 @@ import java.util.Set;
  *
  * IoC 主要启动过程，声明周期：{@link AbstractApplicationContext#refresh()}
  *
- * 手动注入外部对象：{@link org.springframework.beans.factory.config.SingletonBeanRegistry#registerSingleton(String, Object)}
- * 不过有限制，无生命周期管理，无法延迟初始化(外部已经初始化完成)，具体实现：{@link org.springframework.beans.factory.support.DefaultSingletonBeanRegistry}
+ * 手动注入外部对象：{@link SingletonBeanRegistry#registerSingleton(String, Object)}
+ * 不过有限制，无生命周期管理，无法延迟初始化(外部已经初始化完成)，具体实现：{@link DefaultSingletonBeanRegistry}
  *
  * 非容器管理对象作为依赖源，无法进行依赖查找，只能依赖注入，无生命周期，无延迟；
  * 相对单体对象，要求更多；
  * @see #testResolvableDependency()
- * @see org.springframework.beans.factory.config.ConfigurableListableBeanFactory#registerResolvableDependency(Class, Object)
+ * @see ConfigurableListableBeanFactory#registerResolvableDependency(Class, Object)
  *
- * @see org.springframework.beans.factory.config.DependencyDescriptor 注入描述
- * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#resolveDependency(DependencyDescriptor, String, Set, TypeConverter) 入口
+ * @see DependencyDescriptor 注入描述
+ * @see DefaultListableBeanFactory#resolveDependency(DependencyDescriptor, String, Set, TypeConverter) DI入口
  *
  * @author 冰封承諾Andy
  * @date 2020/7/2
@@ -44,29 +55,29 @@ public class Overview {
 	 * BeanFactory 提供了基本的容器功能，而 ApplicationContext 作为其的一个超集（或者子接口），提供了更多的扩展功能；
 	 *
 	 * 内建 Bean 主要有：
-	 * - {@link org.springframework.core.env.Environment}
-	 * - {@link org.springframework.context.MessageSource} 国际化
-	 * - {@link org.springframework.context.LifecycleProcessor}
-	 * - {@link org.springframework.context.event.ApplicationEventMulticaster}
+	 * - {@link Environment}
+	 * - {@link MessageSource} 国际化
+	 * - {@link LifecycleProcessor}
+	 * - {@link ApplicationEventMulticaster}
 	 * - systemProperties type: {@link java.util.Properties}，Java 系统属性
 	 * - SystemEnvironment - Map，环境变量(user level)
 	 *
 	 * 内建可查找依赖：
-	 * - {@link org.springframework.context.annotation.ConfigurationClassPostProcessor}
-	 * - {@link org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor} @Autowire and @Value
-	 * - {@link org.springframework.context.annotation.CommonAnnotationBeanPostProcessor} jsr-250 e.g.: @PostConstruct
-	 * - {@link org.springframework.context.event.EventListenerMethodProcessor} @EventListener
-	 * - {@link org.springframework.context.event.DefaultEventListenerFactory} adapter ApplicationEventListener
+	 * - {@link ConfigurationClassPostProcessor}
+	 * - {@link AutowiredAnnotationBeanPostProcessor} @Autowire and @Value
+	 * - {@link CommonAnnotationBeanPostProcessor} jsr-250 e.g.: @PostConstruct
+	 * - {@link EventListenerMethodProcessor} @EventListener
+	 * - {@link DefaultEventListenerFactory} adapter ApplicationEventListener
 	 * - PersistenceAnnotationBeanPostProcessor (JPA support)
-	 * 助记：{@link org.springframework.context.annotation.AnnotationConfigUtils#registerAnnotationConfigProcessors(BeanDefinitionRegistry, Object)}
+	 * 助记：{@link AnnotationConfigUtils#registerAnnotationConfigProcessors(BeanDefinitionRegistry, Object)}
 	 *
 	 * 如果某个 Bean 需要急切初始化（加入 IoC），可以尝试将其方法标注为 static；
 	 *
-	 * @see org.springframework.context.support.AbstractRefreshableApplicationContext
+	 * @see AbstractRefreshableApplicationContext
 	 * @see DefaultListableBeanFactory 单一、集合、层次 类型
 	 * @see HierarchicalBeanFactory 层次类型
 	 *
-	 * @see org.springframework.context.annotation.ConfigurationClass
+	 * @see ConfigurationClass
 	 */
 	public static void main(String[] args) {
 		// 创建 BeanFactory 容器，DefaultListableBeanFactory 作为默认实现参考 AbstractRefreshableApplicationContext
@@ -86,7 +97,7 @@ public class Overview {
 	//---------------------------------------------------------------------------------------------
 
 	/**
-	 * 循环依赖参考：{@link org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#getSingleton(String)}
+	 * 循环依赖参考：{@link DefaultSingletonBeanRegistry#getSingleton(String)}
 	 */
 	private static void getBean() {
 

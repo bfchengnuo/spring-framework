@@ -235,10 +235,14 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
 		destroy();
 	}
 
+	/**
+	 * 注意，这里销毁，并不意味着是被 GC，对象依然可以使用，只不过 IoC 中被销毁
+	 */
 	@Override
 	public void destroy() {
 		if (!CollectionUtils.isEmpty(this.beanPostProcessors)) {
 			for (DestructionAwareBeanPostProcessor processor : this.beanPostProcessors) {
+				// Aware 和注解在这里执行, 注解由 CommonAnnotationBeanPostProcessor 完成
 				processor.postProcessBeforeDestruction(this.bean, this.beanName);
 			}
 		}
@@ -250,6 +254,7 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
 			try {
 				if (System.getSecurityManager() != null) {
 					AccessController.doPrivileged((PrivilegedExceptionAction<Object>) () -> {
+						// 根据实现 DisposableBean 接口回调
 						((DisposableBean) this.bean).destroy();
 						return null;
 					}, this.acc);
@@ -270,6 +275,7 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
 		}
 
 		if (this.destroyMethod != null) {
+			// 执行自定义的销毁方法
 			invokeCustomDestroyMethod(this.destroyMethod);
 		}
 		else if (this.destroyMethodName != null) {

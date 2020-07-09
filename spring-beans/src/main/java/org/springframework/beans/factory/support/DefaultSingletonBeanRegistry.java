@@ -212,11 +212,16 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @param singletonFactory the ObjectFactory to lazily create the singleton
 	 * with, if necessary
 	 * @return the registered singleton object
+	 *
+	 * 单体 bean 可以是直接 add 进 IoC 中，不能延迟、无生命周期，（应该也不需要 bean definition）
+	 * 例如 @Bean 方法的直接返回对象
 	 */
 	public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
 		Assert.notNull(beanName, "Bean name must not be null");
 		synchronized (this.singletonObjects) {
 			Object singletonObject = this.singletonObjects.get(beanName);
+			// 找到，即可直接返回
+			// 如果是 bean definition 注册的，这里则为空
 			if (singletonObject == null) {
 				if (this.singletonsCurrentlyInDestruction) {
 					throw new BeanCreationNotAllowedException(beanName,
@@ -233,6 +238,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					this.suppressedExceptions = new LinkedHashSet<>();
 				}
 				try {
+					// 通过外部的 Lambda 表达式传入，来创建 bean
 					singletonObject = singletonFactory.getObject();
 					newSingleton = true;
 				}

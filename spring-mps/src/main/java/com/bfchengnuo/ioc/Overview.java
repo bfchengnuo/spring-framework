@@ -2,13 +2,12 @@ package com.bfchengnuo.ioc;
 
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.DefaultSingletonBeanRegistry;
+import org.springframework.beans.factory.support.*;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.LifecycleProcessor;
 import org.springframework.context.MessageSource;
@@ -20,6 +19,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.core.env.Environment;
 
+import java.lang.reflect.Constructor;
 import java.util.Set;
 
 /**
@@ -31,6 +31,7 @@ import java.util.Set;
  * 配置（容器、外部化、托管的资源的配置）；
  *
  * 依赖注入的方式：setter、构造器、字段、方法参数、Aware接口
+ * PS：构造器注入参考 {@link ConstructorResolver#autowireConstructor(String, RootBeanDefinition, Constructor[], Object[])}
  *
  * IoC 主要启动过程，声明周期：{@link AbstractApplicationContext#refresh()}
  *
@@ -73,14 +74,27 @@ public class Overview {
 	 *
 	 * 如果某个 Bean 需要急切初始化（加入 IoC），可以尝试将其方法标注为 static；
 	 *
+	 *
+	 * 最基本的 DefaultListableBeanFactory 实现，不支持特殊 Bean 的自动注册，
+	 * 例如各种后置处理器，需要调用 DefaultListableBeanFactory 的方法进行注册；
+	 * 而如果是 ApplicationContext 则只要包含在 IoC 中就会自动注册。
+	 * 并且，默认简单实现 DefaultListableBeanFactory 也不支持注解驱动，当然可以尝试手动加入 {@link CommonAnnotationBeanPostProcessor} 解决
+	 * 新增的 {@link SmartInitializingSingleton} 在非 ApplicationContext 也不会进行执行，
+	 * 可以通过手动调用 BeanFactory 的 preInstantiateSingletons 方法,
+	 * 当执行 {@link SmartInitializingSingleton} 回调，意味着 Spring Bean 已经全部完成初始化。
+	 * 对比后置处理器的可以操作 Bean 的状态，此时 bean 还未被完全初始化；而在 SmartInitializingSingleton 可大胆使用。
+	 *
+	 *
 	 * @see AbstractRefreshableApplicationContext
 	 * @see DefaultListableBeanFactory 单一、集合、层次 类型
 	 * @see HierarchicalBeanFactory 层次类型
 	 *
 	 * @see ConfigurationClass
+	 * @see AnnotatedBeanDefinitionReader
 	 */
 	public static void main(String[] args) {
 		// 创建 BeanFactory 容器，DefaultListableBeanFactory 作为默认实现参考 AbstractRefreshableApplicationContext
+		// 相比 ApplicationContext，它只有在手动调用的 getBean 的时候才会进行处理依赖，bean definition 相关
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
 		// 加载配置

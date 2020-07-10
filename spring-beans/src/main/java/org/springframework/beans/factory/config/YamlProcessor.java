@@ -46,6 +46,9 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Juergen Hoeller
  * @since 4.1
+ *
+ * @see YamlMapFactoryBean
+ * @see YamlPropertiesFactoryBean
  */
 public abstract class YamlProcessor {
 

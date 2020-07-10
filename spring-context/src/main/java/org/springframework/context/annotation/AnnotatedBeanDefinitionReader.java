@@ -19,6 +19,7 @@ package org.springframework.context.annotation;
 import java.lang.annotation.Annotation;
 import java.util.function.Supplier;
 
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.EnvironmentCapable;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
@@ -45,6 +47,18 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 3.0
  * @see AnnotationConfigApplicationContext#register
+ *
+ * 以 class 作为资源
+ * @see ConditionEvaluator 条件评估
+ * @see ScopeMetadataResolver 范围解析
+ * @see AnnotationConfigUtils#processCommonDefinitionAnnotations(AnnotatedBeanDefinition) BeanDefinition 处理(lazy、dependsOn 等)
+ * @see BeanDefinitionRegistry BeanDefinition 注册
+ *
+ * @see #register(Class[]) 注册一个类，并且不需要标注为 Component
+ * @see #doRegisterBean(Class, String, Class[], Supplier, BeanDefinitionCustomizer[]) 默认使用 Java 内省，其他实现 ASM
+ * @see AnnotationMetadata 两种实现，标准反射与 ASM
+ *
+ * AnnotationConfigUtils 这个工具类会帮助注册一些 BeanPostProcessor 来进行注解驱动的处理
  */
 public class AnnotatedBeanDefinitionReader {
 
@@ -250,6 +264,7 @@ public class AnnotatedBeanDefinitionReader {
 			@Nullable Class<? extends Annotation>[] qualifiers, @Nullable Supplier<T> supplier,
 			@Nullable BeanDefinitionCustomizer[] customizers) {
 
+		// 解析默认使用 Java 内省方式
 		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(beanClass);
 		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
 			return;
@@ -280,7 +295,9 @@ public class AnnotatedBeanDefinitionReader {
 			}
 		}
 
+		// Holder 封装
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
+		// 选择代理模式，CGLIB 还是 JDK 实现，亦或者原型 or 单例
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
 	}

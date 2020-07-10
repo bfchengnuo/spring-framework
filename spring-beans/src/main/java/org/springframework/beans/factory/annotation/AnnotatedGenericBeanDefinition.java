@@ -55,6 +55,8 @@ public class AnnotatedGenericBeanDefinition extends GenericBeanDefinition implem
 	 */
 	public AnnotatedGenericBeanDefinition(Class<?> beanClass) {
 		setBeanClass(beanClass);
+		// 使用 Java 内省技术实现，获取元信息
+		// AnnotationMetadata 有两种实现，标准的 Java 反射和 ASM
 		this.metadata = AnnotationMetadata.introspect(beanClass);
 	}
 

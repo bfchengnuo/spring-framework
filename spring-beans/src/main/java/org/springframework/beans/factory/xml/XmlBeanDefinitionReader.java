@@ -75,6 +75,14 @@ import org.springframework.util.xml.XmlValidationModeDetector;
  * @see BeanDefinitionRegistry
  * @see org.springframework.beans.factory.support.DefaultListableBeanFactory
  * @see org.springframework.context.support.GenericApplicationContext
+ *
+ * 扩展：
+ * @see Resource 资源来源
+ * @see BeanDefinitionDocumentReader DOM Level 3 API  解析
+ * @see BeanDefinitionParserDelegate BeanDefinition 解析
+ * @see BeanDefinitionRegistry BeanDefinition 注册
+ * @see #loadBeanDefinitions(Resource...) inputstream 读取
+ * @see #isNamespaceAware() xml 可以设置 namespace
  */
 public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 

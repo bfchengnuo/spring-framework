@@ -37,6 +37,11 @@ import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
  * @see StandardAnnotationMetadata
  * @see org.springframework.core.type.classreading.MetadataReader#getAnnotationMetadata()
  * @see AnnotatedTypeMetadata
+ *
+ * 实现方式主要由两种：
+ * Java 反射实现：{@link StandardAnnotationMetadata} 默认
+ * ASM 实现：{@link org.springframework.core.type.classreading.AnnotationMetadataReadingVisitor}
+ * ASM 新版：{@link org.springframework.core.type.classreading.SimpleAnnotationMetadata}
  */
 public interface AnnotationMetadata extends ClassMetadata, AnnotatedTypeMetadata {
 

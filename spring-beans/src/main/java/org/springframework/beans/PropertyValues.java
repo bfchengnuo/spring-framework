@@ -23,6 +23,7 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.lang.Nullable;
 
 /**
@@ -33,6 +34,9 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 13 May 2001
  * @see PropertyValue
+ *
+ * 可用于数据绑定（类型转换），多是在 XML 中，因为注解基本都不需要这个
+ * 获得方式，可以是 {@link BeanDefinition#getPropertyValues()}
  */
 public interface PropertyValues extends Iterable<PropertyValue> {
 

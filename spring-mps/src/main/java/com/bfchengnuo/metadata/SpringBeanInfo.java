@@ -20,7 +20,6 @@ import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor;
 import org.springframework.core.env.*;
 import org.springframework.core.io.support.EncodedResource;
 import org.springframework.core.io.support.PropertySourceFactory;
-import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
@@ -75,7 +74,7 @@ import java.util.Properties;
  * @date 2020/7/9
  * @see com.bfchengnuo.ioc.bean.BeanDefinitionDemo 构建参考
  */
-public class BeanInfo {
+public class SpringBeanInfo {
 	/**
 	 * from https://github.com/bfchengnuo/JavaReplay/blob/master/DiveInSpring/src/main/java/com/bfchengnuo/diveinspring/metadata/BeanConfigurationMetadataDemo.java
 	 */
@@ -89,7 +88,7 @@ public class BeanInfo {
 		AbstractBeanDefinition beanDefinition = builder.getBeanDefinition();
 		// 附加属性，不会影响 Bean 的实例化，辅助作用
 		beanDefinition.setAttribute("name", "mps");
-		beanDefinition.setSource(BeanInfo.class);
+		beanDefinition.setSource(SpringBeanInfo.class);
 
 
 		// BeanFactory 的默认实现为 DefaultListableBeanFactory
@@ -128,7 +127,7 @@ public class BeanInfo {
 
 	private static void propertySource() {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		applicationContext.register(BeanInfo.class);
+		applicationContext.register(SpringBeanInfo.class);
 
 		// 扩展 Environment 中的 PropertySource
 		Map<String, Object> map = new HashMap<>();

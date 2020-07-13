@@ -65,6 +65,9 @@ public abstract class AbstractApplicationEventMulticaster
 
 	private final ListenerRetriever defaultRetriever = new ListenerRetriever(false);
 
+	// 事件和监听的对应，一个事件可以对应多个监听器
+	// ListenerCacheKey 根据泛型解析（过滤）自定义的类型，进行匹配
+	// ListenerRetriever 可以匹配到子类
 	final Map<ListenerCacheKey, ListenerRetriever> retrieverCache = new ConcurrentHashMap<>(64);
 
 	@Nullable

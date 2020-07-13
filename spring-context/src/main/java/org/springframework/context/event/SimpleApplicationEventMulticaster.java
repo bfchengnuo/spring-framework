@@ -45,6 +45,11 @@ import org.springframework.util.ErrorHandler;
  * @author Juergen Hoeller
  * @author Stephane Nicoll
  * @see #setTaskExecutor
+ *
+ * @see #invokeListener(ApplicationListener, ApplicationEvent) 调用
+ * @see AbstractApplicationEventMulticaster
+ * @see AbstractApplicationEventMulticaster.ListenerCacheKey
+ * @see AbstractApplicationEventMulticaster.ListenerRetriever
  */
 public class SimpleApplicationEventMulticaster extends AbstractApplicationEventMulticaster {
 

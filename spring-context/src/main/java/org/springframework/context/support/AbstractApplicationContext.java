@@ -396,6 +396,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Multicast right now if possible - or lazily once the multicaster is initialized
+		// refresh 方法调用时，在注册 PostProcessors 的时候如果调用了事件相关 API，此时 ApplicationEventMulticaster 还没有进行初始化
+		// 因此这是一个早期行为，加入到 earlyApplicationEvents 中，等准备好之后再执行
+		// earlyApplicationEvents 的初始化在 prepareRefresh
 		if (this.earlyApplicationEvents != null) {
 			this.earlyApplicationEvents.add(applicationEvent);
 		}
@@ -518,6 +521,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.
 			// 准备过程
+			// 其中会初始化 earlyApplicationEvents Set 集合对象，解决事件在 PostProcessors 提前触发的问题
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
@@ -552,6 +556,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				onRefresh();
 
 				// Check for listener beans and register them.
+				// 这个阶段会执行之前存入 earlyApplicationEvents 集合里的事件，然后会将其置空
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.

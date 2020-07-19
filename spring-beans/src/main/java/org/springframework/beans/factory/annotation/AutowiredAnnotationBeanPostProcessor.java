@@ -648,6 +648,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 				TypeConverter typeConverter = beanFactory.getTypeConverter();
 				try {
 					// 解析注入信息
+					// 默认实现：DefaultListableBeanFactory
 					value = beanFactory.resolveDependency(desc, beanName, autowiredBeanNames, typeConverter);
 				}
 				catch (BeansException ex) {

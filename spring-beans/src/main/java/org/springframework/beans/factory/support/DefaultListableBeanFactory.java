@@ -1264,6 +1264,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			// 具体的注入类型
 			Class<?> type = descriptor.getDependencyType();
 			// 获取自定义注入候选对象处理器 AutowireCandidateResolver
+			// getSuggestedValue 可参考 QualifierAnnotationAutowireCandidateResolver 的具体实现 (@Value)
 			Object value = getAutowireCandidateResolver().getSuggestedValue(descriptor);
 			if (value != null) {
 				if (value instanceof String) {
@@ -1272,6 +1273,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							getMergedBeanDefinition(beanName) : null);
 					value = evaluateBeanDefinitionString(strVal, bd);
 				}
+				// 类型转换
 				TypeConverter converter = (typeConverter != null ? typeConverter : getTypeConverter());
 				try {
 					return converter.convertIfNecessary(value, type, descriptor.getTypeDescriptor());

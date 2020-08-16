@@ -148,6 +148,7 @@ import java.util.concurrent.locks.Condition;
  *
  * ======生命周期======
  * IoC 主要启动过程，生命周期：{@link AbstractApplicationContext#refresh()}
+ * 对于其 start 和 stop 方法，一般很少主动调用，这两个方法主要作用在 LifecycleProcessor 上。
  *
  * --------------------------------------------------------------------------------------
  * Spring 事件

@@ -137,13 +137,44 @@ import java.util.concurrent.locks.Condition;
  * @see Overview#testResolvableDependency()
  * @see ConfigurableListableBeanFactory#registerResolvableDependency(Class, Object)
  *
- * TODO ======循环依赖======
+ * ======循环依赖======
  * Spring 为了解决循环依赖的问题采用了 singletonObjects、earlySingletonObjects、singletonFactories 三个级别的缓存来缓存 bean 对象
- * A、B 两个对象如果循环依赖的话，假设 A 对象先被创建，那么它会被放入 singletonFactories，
- * 当解析它的依赖属性 B 并创建时，发现依赖属性 A，此时会通过 getSingleton 将 A 从 singletonFactories 移动到 earlySingletonObjects，
- * 最终当 B 创建完注入 A 返回之后，再将 B 注入 A 才会将 A 移动到 singletonObjects。
+ * A、B 两个对象如果循环依赖的话，假设 A 对象先被创建，递归注入的时候发现依赖 B（未创建），那么它会被放入 singletonFactories，
+ * 当解析 B 并创建时，发现依赖属性 A，此时会通过 getSingleton 查找到 A 已经在 singletonFactories 中了，
+ * 然后会把 A 从 singletonFactories 移动到 earlySingletonObjects（由工厂进行 get 出对象，然后放入 earlySingletonObjects，此时 A 未完全初始化），
+ * 最终 B 就可以创建完成并注入 A，最后返回递归再将 B 注入 A 才会将 A 移动到 singletonObjects。
  *
+ * 循环依赖开关：{@link AbstractAutowireCapableBeanFactory#setAllowCircularReferences}
+ * 单例处理属性（缓存）：{@link DefaultSingletonBeanRegistry#singletonFactories}
+ * 获取早期未处理的 Bean 的方法：{@link AbstractAutowireCapableBeanFactory#getEarlyBeanReference(String, RootBeanDefinition, Object)}
+ * 早期未处理 Bean 属性：{@link DefaultSingletonBeanRegistry#earlySingletonObjects}
+ * 我们所说的三级缓存：
+ * @see DefaultSingletonBeanRegistry#singletonObjects
+ * @see DefaultSingletonBeanRegistry#earlySingletonObjects
+ * @see DefaultSingletonBeanRegistry#singletonFactories
+ *
+ * 第一次不知道是否是循环依赖，一般都会去执行 {@link AbstractAutowireCapableBeanFactory#doCreateBean(String, RootBeanDefinition, Object[])}
+ * 在这个方法中，会有个判断，如果当前 Bean 正在创建，就会加入到三级缓存中
+ *
+ * 初始化过程中，在递归调用时发现 Bean 还在创建中即为循环依赖；
+ * bean 的获取过程：先从一级获取，失败再从二级、三级里面获取；Bean 的创建不是一步完成的，首先 new 出对象，此时属性为 null，然后进行 init 初始化；
+ * 不过需要注意，如果是构造器循环依赖，是处理不了的，非单例也处理不了。
+ *
+ * 简单描述：
+ * 当我们发起一个 getBean A 请求时；
+ * 首先去三个缓存中寻找，如果都没有找到说明还没创建过，即开始创建流程；
+ * 此时会放入到 singletonsCurrentlyInCreation 集合中，标识此对象正在创建；并且会加入三级缓存中；
+ * 然后填充 A 属性的过程中发现需要 B，即递归调用，重复以上步骤；
+ * 在搞 B 的时候又发现依赖 A，这时候可以从三级缓存中拿到，然后通过工厂创建 bean（不完整），移动到二级缓存中（删除和添加操作）
+ * 这样 B 就可以算是创建完成了，虽然此时 B 中的 A 是不完整的；
+ * 返回之前的递归调用，开始处理 A 的属性，此时可以直接注入，注入完成后，A 和 B 就算是完整的对象了，会被放入一级缓存，从其他的缓存中删除。
  * @see DefaultSingletonBeanRegistry#getSingleton(String)
+ *
+ * 为什么需要三级缓存？
+ * 使用二级缓存也可以完成循环依赖的处理，使用三级的好处是可以在这个过程进行 Bean 的拓展，或者说定制；
+ * 在三级缓存中，我们可以通过一些后置处理器来进行增强，通过一个工厂延迟了创建 Bean 的时机；
+ * @see DefaultSingletonBeanRegistry#singletonsCurrentlyInCreation 标识对象正在创建中
+ * @see AbstractBeanFactory#doGetBean(String, Class, Object[], boolean)
  * @see Overview#getBean()
  *
  * ======生命周期======
